@@ -168,7 +168,7 @@ public class Dessin extends JPanel implements MouseListener, MouseMotionListener
 			}
 			else if (methode.equals("backtrack"))
 			{
-				BackTrack_v2 choix = new BackTrack_v2(graphe);
+				BackTrack_v3 choix = new BackTrack_v3(graphe);
 				choix.lancement();
 				choix.affichageParcoursGraphe(g, dimensionGrille);
 				result.remplirCases(choix.minparcours, choix.tempsParcours);
