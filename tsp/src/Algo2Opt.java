@@ -16,8 +16,9 @@ public class Algo2Opt extends CreationGraphe
 	{
 		double begin = System.currentTimeMillis();
 		ppv = new ProchesVoisins (g);
-		boolean change = true;
 		ppv.lancement();
+		
+		boolean change = true;
 
 		listePoints = new ArrayList<Point>();
 		listePoints.addAll(super.g.getListePoints());
