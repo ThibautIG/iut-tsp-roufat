@@ -43,7 +43,7 @@ public class Dessin extends JPanel implements MouseListener, MouseMotionListener
 
 		// Ecouteur de la souris
 		addMouseListener(this);
-		addMouseMotionListener(this);
+		//addMouseMotionListener(this);
 
 		// Enregistrement de la methode employee
 		this.methode = s;
@@ -93,7 +93,7 @@ public class Dessin extends JPanel implements MouseListener, MouseMotionListener
 		{
 			System.out.println("Methode utilisee : " + methode);
 			this.generationParcours(g);
-			System.out.println("Apres la gene");
+			System.out.println("Apres la generation");
 		}
 	}
 
@@ -157,8 +157,7 @@ public class Dessin extends JPanel implements MouseListener, MouseMotionListener
 	public void generationParcours (Graphics g)
 	{
 		//valide = false;
-		System.out.println("Dans GenerationParcours");
-			System.out.println("Dans le for");
+			System.out.println("Dans GenerationParcours");
 			if (methode.equals("bruteforce"))
 			{
 				BruteForce choix = new BruteForce(graphe);
@@ -168,7 +167,7 @@ public class Dessin extends JPanel implements MouseListener, MouseMotionListener
 			}
 			else if (methode.equals("backtrack"))
 			{
-				BackTrack_v3 choix = new BackTrack_v3(graphe);
+				BackTrack_v4 choix = new BackTrack_v4(graphe);
 				choix.lancement();
 				choix.affichageParcoursGraphe(g, dimensionGrille);
 				result.remplirCases(choix.minparcours, choix.tempsParcours);

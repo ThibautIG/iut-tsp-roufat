@@ -55,7 +55,7 @@ public class Fenetre extends JFrame implements ActionListener, ChangeListener, I
 	{	
 		this.setSize(950,600);										// Taille de la fenetre
 		this.setTitle("Probleme du voyageur de commerce");			// Titre de la fenetre
-		this.setResizable(true);									// Fenetre non redimensionnable
+		this.setResizable(false);									// Fenetre non redimensionnable
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);				// Affichage au milieu de l'ecran
 		this.setLayout(new BorderLayout());
