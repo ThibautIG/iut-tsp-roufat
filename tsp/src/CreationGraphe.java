@@ -61,12 +61,13 @@ public class CreationGraphe
 		Point u = null;
 		Point v = null;
 		
-		for (int i=1; i < parcoursmin.size()-1; i++)
+		for (int i=1; i < parcoursmin.size(); i++)
 		{
 			u = parcoursmin.get(i-1);
 			v = parcoursmin.get(i);
 			g.drawLine((int)u.getX(),(int)u.getY(),(int)v.getX(), (int)v.getY());
 		}
+		
 		u = parcoursmin.get(parcoursmin.size()-1);
 		v = parcoursmin.get(0);
 		// Dessin de la ligne qui amene au 0

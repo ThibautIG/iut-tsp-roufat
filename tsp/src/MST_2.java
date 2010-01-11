@@ -12,7 +12,7 @@ public class MST_2
 		listePoints = new ArrayList<Point>();
 		this.listePoints = vect;
 	}
-
+	
 	public void lancement ()
 	{
 		// Initialisation de listePoints
