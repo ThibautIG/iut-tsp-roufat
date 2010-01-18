@@ -40,7 +40,8 @@ public class BackTrack_v4 extends CreationGraphe
 			if (newDist < super.minparcours) {
 				//System.out.println("passe");
 				super.minparcours = newDist;
-				super.parcoursmin = subtour;
+				super.parcoursmin.clear(); 
+				super.parcoursmin.addAll(subtour);
 				//afficheliste(subtour);
 				//System.out.println("  -> "+minparcours);}
 			}

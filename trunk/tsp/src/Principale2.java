@@ -9,7 +9,7 @@ public class Principale2 {
 	public static void main(String[] args) throws IOException {
 
 		long begin, end; double time;
-		int nombre_villes = 17;
+		int nombre_villes = 7;
 		
 		// FAIRE LA MODIFICATION SUR LA LIGNE AU-DESSOUS : CHANGER LE CHEMIN ET LE NOM DU FICHIER
 		PrintWriter ecri = new PrintWriter(new FileWriter("/home/tommi/TestTSP/essai_" + nombre_villes + "_points"));
@@ -54,9 +54,9 @@ public class Principale2 {
 					//ecri.println("Temps d'execution : " + time);
 					listetempsBruteForce.add(((double) (end-begin)) / 1000f);
 					listevaleurBruteForce.add(graphe.minparcours);
-*/
-					//ecri.println();
 
+					//ecri.println();
+*/
 					//ecri.println("=== BACKTRACK VERSION 4===");
 					BackTrack_v4 graphe4 = new BackTrack_v4 (g);
 					begin = System.currentTimeMillis();
@@ -64,7 +64,7 @@ public class Principale2 {
 					//ecri.println("Distance : " + graphe4.minparcours);
 					end = System.currentTimeMillis();
 					time = (end - begin) / 1000f;
-					listetempsBackTrack.add(time/1000);
+					listetempsBackTrack.add(time);
 					listevaleurBackTrack.add(graphe4.minparcours);
 				//	ecri.println("Temps d'execution : " + time);
 					/*
@@ -89,7 +89,7 @@ public class Principale2 {
 					end = System.currentTimeMillis();
 					time = ((float) (end-begin)) / 1000f;
 				//	ecri.println("Temps d'execution : " + time);
-					listetempsAlgo2Opt.add(time/1000);
+					listetempsAlgo2Opt.add(time);
 					listevaleurAlgo2Opt.add(graphe5.minparcours);
 
 				//	ecri.println();
@@ -102,7 +102,7 @@ public class Principale2 {
 					end = System.currentTimeMillis();
 					time = ((float) (end-begin)) / 1000f;
 				//	ecri.println("Temps d'execution : " + time);
-					listetempsProchesVoisins.add(time/1000);
+					listetempsProchesVoisins.add(time);
 					listevaleurProchesVoisins.add(graphe6.minparcours);
 
 				//	ecri.println();
@@ -117,7 +117,9 @@ public class Principale2 {
 		System.out.println("Cout : " + graphe7.minparcours);
 		//listetemps.add(((double) (end-begin)) / 1000f);
 		//listevaleur.add(graphe7.cout());
-					 */		 	
+					 */		
+					
+					System.out.println("FIN BOUCLE");
 				}
 /*
 				double temps = 0;
@@ -199,6 +201,7 @@ public class Principale2 {
 
 				ecri.println();
 				ecri.println();
+				
 			//}  
 
 			ecri.flush();
