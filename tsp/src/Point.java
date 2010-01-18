@@ -15,8 +15,8 @@ public class Point {
 	{
 		this.ident = ident;
 		Random rd = new Random();
-		this.x = rd.nextInt(600);
-		this.y = 10+rd.nextInt(350);
+		this.x = rd.nextInt(560);
+		this.y = 10+rd.nextInt(550);
 
 	}
 	

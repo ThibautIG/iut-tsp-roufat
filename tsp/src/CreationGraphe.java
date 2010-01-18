@@ -67,7 +67,7 @@ public class CreationGraphe
 			v = parcoursmin.get(i);
 			g.drawLine((int)u.getX(),(int)u.getY(),(int)v.getX(), (int)v.getY());
 		}
-		
+			
 		u = parcoursmin.get(parcoursmin.size()-1);
 		v = parcoursmin.get(0);
 		// Dessin de la ligne qui amene au 0
