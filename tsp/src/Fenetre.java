@@ -17,36 +17,29 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.sun.xml.internal.bind.v2.runtime.XMLSerializer;
-
-
 public class Fenetre extends JFrame implements ActionListener, ChangeListener, ItemListener
 {
 	private static final long serialVersionUID = 1L;
-	private JPanel barreFenetre, parametres, choixVilles, choixMethodes, informations, methodes1, methodes2;
-	private Dessin grillePrincipale, grilleBruteForce, grilleBacktrack, grillePlusProchesVoisins, grilleMST, grille2Opt;
+	private JPanel barreFenetre, parametres, choixVilles, choixMethodes, methodes1, methodes2, methodes3;
+	private Dessin grillePrincipale, grilleBruteForce, grilleBacktrack, grilleBackTrackv2, grilleBackTrackv3, grilleBackTrackv4, grillePlusProchesVoisins, grilleMST, grille2Opt;
 	private JMenuBar menu;
-	private JMenu fichier, edition, aPropos;
-	private JMenuItem open, saveParcours, newParcours, about;
-	private JButton boutonNouveau, boutonOuvrir, validerParcours;
+	private JMenu fichier, aPropos;
+	private JMenuItem open, saveParcours, newParcours, about, quit;
+	private JButton boutonNouveau, boutonOuvrir, validerParcours, validerNbrVilles;
 	private JSlider sliderVilles;
 	private JTabbedPane tableOnglets;
 	private int nombreslider;
 	private JTextField nbrVilles;
-	private JCheckBox rb1, rb2, rb3, rb4, rb5;
+	private JCheckBox checkBruteForce, checkBackTrack, checkBackTrackv2, checkBackTrackv3, checkBackTrackv4, checkPlusProchesVoisins, checkMST, checkAlgo2Opt;
 	private int nombreMethodes = 1;			// Par défaut sur la bruteforce
-	private JTextArea explicationsMethodes;
-	private JScrollPane barreDefilInformations;
 	private boolean villesGenerees = false;
-	private XMLSerializer xml;
+	private XmlSerializer xml;
 
 	private Resultats result;
 
@@ -82,7 +75,6 @@ public class Fenetre extends JFrame implements ActionListener, ChangeListener, I
 
 		// Creation des menus
 		fichier = new JMenu("Fichier"); add(fichier);
-		edition = new JMenu("Edition"); add(edition);
 		aPropos = new JMenu("A propos"); add(aPropos);
 
 		// Creation des sous-menus
@@ -90,25 +82,28 @@ public class Fenetre extends JFrame implements ActionListener, ChangeListener, I
 		open = new JMenuItem("Ouvrir");
 		saveParcours = new JMenuItem("Sauvegarder Parcours");
 		about = new JMenuItem("A propos");
+		quit = new JMenuItem("Quitter");
 
 		// Ajout des identifications de menu
 		open.setActionCommand("ouvrir");
 		saveParcours.setActionCommand("saveparcours");
 		newParcours.setActionCommand("newParcours");
 		about.setActionCommand("apropos");
+		quit.setActionCommand("quit");
 
 		// Ajout des ecouteurs de menu
 		open.addActionListener(this);
 		saveParcours.addActionListener(this);
 		newParcours.addActionListener(this);
 		about.addActionListener(this);
+		quit.addActionListener(this);
 
 		// Ajout des menus à la barre
 		fichier.add(newParcours);
 		fichier.add(open);
 		fichier.add(saveParcours);
+		fichier.add(quit);
 		menu.add(fichier);
-		menu.add(edition);
 		aPropos.add(about);
 		menu.add(aPropos);
 
@@ -136,27 +131,24 @@ public class Fenetre extends JFrame implements ActionListener, ChangeListener, I
 	public void initParametres ()
 	{
 		parametres = new JPanel();
-		parametres.setLayout(new GridLayout(3,1));;
+		parametres.setLayout(new BorderLayout());;
 		parametres.setPreferredSize(new Dimension(getWidth()/3, getHeight()- getHeight()/4));
 
 		choixVilles = new JPanel ();
 		choixVilles.setLayout(new GridBagLayout());			// Utilisation d'un GridBagLayout		
 		creationPanelVilles();								// Appel Méthode Création JPanel
 		choixVilles.setBorder(BorderFactory.createEtchedBorder(Color.black, Color.GRAY));
-		parametres.add(choixVilles);
-
+		parametres.add(choixVilles, BorderLayout.NORTH);
 
 		choixMethodes = new JPanel ();
-		choixMethodes.setLayout(new BorderLayout());
+		choixMethodes.setLayout(new GridLayout(3,1));
 		creationPanelMethodes();
 		choixMethodes.setBorder(BorderFactory.createEtchedBorder(Color.black, Color.GRAY));
-		parametres.add(choixMethodes);
+		parametres.add(choixMethodes, BorderLayout.CENTER);
 
-
-		informations = new JPanel ();
-		creationPanelInformations();
-		informations.setBorder(BorderFactory.createEtchedBorder(Color.black, Color.GRAY));
-		parametres.add(informations);
+		validerParcours = new JButton("Valider");
+		validerParcours.setActionCommand("validerparcours"); validerParcours.addActionListener(this);
+		parametres.add(validerParcours, BorderLayout.SOUTH);
 
 		parametres.setBorder(BorderFactory.createEtchedBorder(Color.black, Color.GRAY));
 		add(parametres, BorderLayout.WEST);
@@ -169,13 +161,14 @@ public class Fenetre extends JFrame implements ActionListener, ChangeListener, I
 
 		choixVilles.setBorder(BorderFactory.createTitledBorder("Villes"));
 
-		//		JLabel textvilles = new JLabel("Villes : ");
-		//		c.gridx = 1; c.gridy = 0;
-		//		choixVilles.add(textvilles,c);
-
 		nbrVilles = new JTextField("0",8);
 		c.gridx = 2; c.gridy = 0; c.fill = GridBagConstraints.BOTH;
 		choixVilles.add(nbrVilles,c);
+		
+		validerNbrVilles = new JButton("Generation");
+		c.gridx = 3; c.gridy = 0; c.fill = GridBagConstraints.BOTH;
+		validerNbrVilles.setActionCommand("generation"); validerNbrVilles.addActionListener(this);
+		choixVilles.add(validerNbrVilles,c);
 
 		sliderVilles = new JSlider(JSlider.HORIZONTAL,0,100,0);
 		sliderVilles.setBorder(BorderFactory.createTitledBorder("Nombre de villes"));
@@ -188,7 +181,7 @@ public class Fenetre extends JFrame implements ActionListener, ChangeListener, I
 		c.fill = GridBagConstraints.BOTH;
 		choixVilles.add(sliderVilles,c);
 
-		JButton btGenerationVilles = new JButton("Generer");
+		JButton btGenerationVilles = new JButton("Generation Slider");
 		btGenerationVilles.setActionCommand("generation"); btGenerationVilles.addActionListener(this); 
 		c.gridx = 2; c.gridy = 2; c.gridwidth = 1; c.weightx = 0;
 		choixVilles.add(btGenerationVilles,c);	
@@ -201,77 +194,72 @@ public class Fenetre extends JFrame implements ActionListener, ChangeListener, I
 
 		choixMethodes.setBorder(BorderFactory.createTitledBorder("Methodes de resolution"));
 
-		// TO DO :
-		// Enlever les ADDACTIONLISTENER
 		methodes1 = new JPanel ();					// JPanel pour les methodes completes
-		methodes1.setLayout(new GridLayout(3,1));			// 3 lignes, 1 colonne
-		methodes1.setBorder(BorderFactory.createTitledBorder("Completes"));
-		rb1 = new JCheckBox("BruteForce"); rb1.setActionCommand("bruteforce");	rb1.addActionListener(this); rb1.addItemListener(this);
-		rb2 = new JCheckBox("BackTrack");  rb2.setActionCommand("backtrack"); rb2.addActionListener(this);rb2.addItemListener(this);
-		methodes1.add(rb1); methodes1.add(rb2);
+		methodes1.setLayout(new GridLayout(5,1));			// 3 lignes, 1 colonne
+		methodes1.setBorder(BorderFactory.createTitledBorder("Exactes"));
+		checkBruteForce = new JCheckBox("BruteForce"); checkBruteForce.setActionCommand("bruteforce"); checkBruteForce.addItemListener(this);
+		checkBackTrack = new JCheckBox("BackTrack");  checkBackTrack.setActionCommand("backtrack"); checkBackTrack.addItemListener(this);
+		checkBackTrackv2 = new JCheckBox("BackTrack + MST"); checkBackTrackv2.setActionCommand("backtrackv2"); checkBackTrackv2.addItemListener(this);
+		checkBackTrackv3 = new JCheckBox("BackTrack + 2-Opt"); checkBackTrackv3.setActionCommand("backtrackv3"); checkBackTrackv3.addItemListener(this);
+		checkBackTrackv4 = new JCheckBox("BackTrack + 2-Opt + MST"); checkBackTrackv4.setActionCommand("backtrackv4"); checkBackTrackv4.addItemListener(this);
+		
+		methodes1.add(checkBruteForce); methodes1.add(checkBackTrack); methodes1.add(checkBackTrackv2); methodes1.add(checkBackTrackv3); methodes1.add(checkBackTrackv4);
 
 		methodes2 = new JPanel();
 		methodes2.setLayout(new GridLayout(3,1));
-		methodes2.setBorder(BorderFactory.createTitledBorder("Approximatives"));
-		rb3 = new JCheckBox("Plus Proches Voisins"); rb3.setActionCommand("plusprochesvoisins"); rb3.addActionListener(this);rb3.addItemListener(this);
-		rb4 = new JCheckBox("MST"); rb4.setActionCommand("mst"); rb4.addActionListener(this);rb4.addItemListener(this);
-		rb5 = new JCheckBox("2-Opt"); rb5.setActionCommand("opt"); rb5.addActionListener(this); rb5.addItemListener(this);
-		methodes2.add(rb3); methodes2.add(rb4); methodes2.add(rb5);
+		methodes2.setBorder(BorderFactory.createTitledBorder("Approchees - Recherche Locale"));
+		checkPlusProchesVoisins = new JCheckBox("Plus Proches Voisins"); checkPlusProchesVoisins.setActionCommand("plusprochesvoisins"); checkPlusProchesVoisins.addItemListener(this);
+		checkAlgo2Opt = new JCheckBox("2-Opt"); checkAlgo2Opt.setActionCommand("opt"); checkAlgo2Opt.addItemListener(this);
+		methodes2.add(checkPlusProchesVoisins); methodes2.add(checkAlgo2Opt);
+		
+		methodes3 = new JPanel();
+		methodes3.setLayout(new GridLayout(1,1));
+		methodes3.setBorder(BorderFactory.createTitledBorder("Approchees - Approximation"));
+		checkMST = new JCheckBox("MST"); checkMST.setActionCommand("mst"); checkMST.addItemListener(this);
+		methodes3.add(checkMST); 
+	
 
-		validerParcours = new JButton("Valider");
-		validerParcours.setActionCommand("validerparcours"); validerParcours.addActionListener(this);
-
-		choixMethodes.add(methodes1,BorderLayout.WEST);
-		choixMethodes.add(methodes2,BorderLayout.EAST);
-		choixMethodes.add(validerParcours,BorderLayout.SOUTH);
-
-	}
-
-	public void creationPanelInformations ()
-	{
-		informations.setBorder(BorderFactory.createTitledBorder("Informations"));
-		informations.setLayout(new BorderLayout());
-
-		explicationsMethodes = new JTextArea();
-		barreDefilInformations = new JScrollPane();
-		informations.add(barreDefilInformations);
-
-		if (nombreMethodes == 1)
-		{
-			explicationsMethodes.removeAll();
-			explicationsMethodes.append("La methode Bruteforce est une methode permettant de tester toutes les combinaisons possibles. Elle est particulierement lente pour un grand nombre de villes. ");
-		}
-
-		informations.add(explicationsMethodes);
-		barreDefilInformations.setViewportView(explicationsMethodes);
-		explicationsMethodes.setEditable(false);
+		choixMethodes.add(methodes1);
+		choixMethodes.add(methodes2);
+		choixMethodes.add(methodes3);
 	}
 
 	/**
 	 * Affichage de la grille principale.
-	 * Les autres onglets seront affichés par la suite.
+	 * Les autres onglets seront affichés dans la suite des instructions.
 	 */
 	public void initGrille ()
 	{		
-		grillePrincipale = new Dessin("principale", result);
+		// NbrVilles est en parametre pour permettre de changer le nombre de villes lorsqu'on clique sur la grille.
+		grillePrincipale = new Dessin("principale", result, nbrVilles);
 		grillePrincipale.setPreferredSize(new Dimension(2*getWidth()/3,  3*(getHeight()/4)));
 
-		grilleBruteForce = new Dessin("bruteforce", result);
+		grilleBruteForce = new Dessin("bruteforce", result, nbrVilles);
 		grilleBruteForce.setPreferredSize(new Dimension(2*getWidth()/3,  3*(getHeight()/4)));
 
-		grilleBacktrack = new Dessin ("backtrack", result);
+		grilleBacktrack = new Dessin ("backtrack", result, nbrVilles);
 		grilleBacktrack.setPreferredSize(new Dimension(2*getWidth()/3,  3*(getHeight()/4)));
+		
+		grilleBackTrackv2 = new Dessin ("backtrackv2", result, nbrVilles);
+		grilleBackTrackv2.setPreferredSize(new Dimension(2*getWidth()/3,  3*(getHeight()/4)));
+		
+		grilleBackTrackv3 = new Dessin ("backtrackv3", result, nbrVilles);
+		grilleBackTrackv3.setPreferredSize(new Dimension(2*getWidth()/3,  3*(getHeight()/4)));
+		
+		grilleBackTrackv4 = new Dessin ("backtrackv4", result, nbrVilles);
+		grilleBackTrackv4.setPreferredSize(new Dimension(2*getWidth()/3,  3*(getHeight()/4)));
 
-		grillePlusProchesVoisins = new Dessin ("plusprochesvoisins", result);
+		grillePlusProchesVoisins = new Dessin ("plusprochesvoisins", result, nbrVilles);
 		grillePlusProchesVoisins.setPreferredSize(new Dimension(2*getWidth()/3,  3*(getHeight()/4)));
 
-		grille2Opt = new Dessin ("opt", result);
+		grille2Opt = new Dessin ("opt", result, nbrVilles);
 		grille2Opt.setPreferredSize(new Dimension(2*getWidth()/3,  3*(getHeight()/4)));
 
-		grilleMST = new Dessin ("mst", result);
+		grilleMST = new Dessin ("mst", result, nbrVilles);
 		grilleMST.setPreferredSize(new Dimension(2*getWidth()/3,  3*(getHeight()/4)));
 
 		tableOnglets.add("Principal", grillePrincipale);
+		System.out.println("passe");
 		this.add(tableOnglets, BorderLayout.CENTER);
 	}
 
@@ -287,17 +275,59 @@ public class Fenetre extends JFrame implements ActionListener, ChangeListener, I
 
 	public void actionPerformed (ActionEvent ev)
 	{
-		// Menu
-		if (ev.getActionCommand().equals("ouvrir"))
+		// Bouton Ouvrir et Sauvegarder
+		if (ev.getActionCommand().equals("ouvrir") || ev.getActionCommand().equals("saveParcours"))
 		{
-		
+			xml = new XmlSerializer();
+			if (ev.getActionCommand().equals("ouvrir"))
+			{
+				
+			}
+			else if (ev.getActionCommand().equals("saveParcours"))
+			{
+				
+			}
 		}
 		
+		// Quitter
+		else if (ev.getActionCommand().equals("quit"))
+		{
+			System.exit(0);
+		}
+		
+		// Nouveau parcours
+		else if (ev.getActionCommand().equals("newParcours"))
+		{
+			// Suppression de la table des méthodes
+			tableOnglets.removeAll();
+			
+			// Décochage des JCheckBox
+			checkBruteForce.setSelected(false);	checkBackTrack.setSelected(false); checkBackTrackv2.setSelected(false); checkBackTrackv3.setSelected(false); checkBackTrackv4.setSelected(false);
+			checkPlusProchesVoisins.setSelected(false); checkMST.setSelected(false); checkAlgo2Opt.setSelected(false);
+			
+			// Ajout de la grille principale
+			initGrille();
+			
+			// Initialisation de Resultats
+			initResultats();
+			
+			villesGenerees = false;
+			valideParc = false;
+		}
+				
 		// Generation des villes
 		else if (ev.getActionCommand().equals("generation"))
 		{
+			System.out.println("passe");
 			villesGenerees = true;
-			grillePrincipale.generationVilles(this.nombreslider);
+			grillePrincipale.generationVilles(Integer.parseInt(nbrVilles.getText()));
+			
+			if (Integer.parseInt(nbrVilles.getText()) <= 100)
+			{
+				sliderVilles.setValue(Integer.parseInt(nbrVilles.getText()));
+			}
+			else
+				sliderVilles.setValue(100);
 		}	
 		
 		// Validation des parcours
@@ -313,27 +343,25 @@ public class Fenetre extends JFrame implements ActionListener, ChangeListener, I
 
 			grilleBruteForce.setBoutonValider(true);
 			grilleBacktrack.setBoutonValider(true);
+			grilleBackTrackv2.setBoutonValider(true);
+			grilleBackTrackv3.setBoutonValider(true);
+			grilleBackTrackv4.setBoutonValider(true);
 			grillePlusProchesVoisins.setBoutonValider(true);
 			grilleMST.setBoutonValider(true);
 			grille2Opt.setBoutonValider(true);
-
 		}
 	}
 
+	// Changement du nombre de villes dans le slider
 	public void stateChanged(ChangeEvent ev) {
-		JSlider source = (JSlider) ev.getSource();
-		if (!source.getValueIsAdjusting())
-		{
-			nombreslider = (int) source.getValue();
-			nbrVilles.setText(""+nombreslider);
-		}
-
+			nbrVilles.setText(sliderVilles.getValue()+"");
 	}
 
+	// Cochage des JCheckBox
 	public void itemStateChanged(ItemEvent e) {
 
 		tableOnglets.removeAll();
-		if (rb1.isSelected())
+		if (checkBruteForce.isSelected())
 		{
 			tableOnglets.addTab("BruteForce", grilleBruteForce);
 			grilleBruteForce.setCliqueParcours(true);
@@ -341,15 +369,39 @@ public class Fenetre extends JFrame implements ActionListener, ChangeListener, I
 		else
 			grilleBruteForce.setCliqueParcours(false);
 
-		if (rb2.isSelected())
+		if (checkBackTrack.isSelected())
 		{
 			tableOnglets.addTab("Backtrack", grilleBacktrack);
 			grilleBacktrack.setCliqueParcours(true);
 		}
 		else
 			grilleBacktrack.setCliqueParcours(false);
+		
+		if (checkBackTrackv2.isSelected())
+		{
+			tableOnglets.addTab("BackTrack + MST", grilleBackTrackv2);
+			grilleBackTrackv2.setCliqueParcours(true);
+		}
+		else
+			grilleBackTrackv2.setCliqueParcours(false);
+		
+		if (checkBackTrackv3.isSelected())
+		{
+			tableOnglets.addTab("BackTrack + 2Opt", grilleBackTrackv3);
+			grilleBackTrackv3.setCliqueParcours(true);
+		}
+		else
+			grilleBackTrackv3.setCliqueParcours(false);
+		
+		if (checkBackTrackv4.isSelected())
+		{
+			tableOnglets.addTab("BackTrack + 2Opt + MST", grilleBackTrackv4);
+			grilleBackTrackv4.setCliqueParcours(true);
+		}
+		else
+			grilleBackTrackv4.setCliqueParcours(false);
 
-		if (rb3.isSelected())
+		if (checkPlusProchesVoisins.isSelected())
 		{
 			tableOnglets.addTab("Plusprochesvoisins", grillePlusProchesVoisins);
 			grillePlusProchesVoisins.setCliqueParcours(true);
@@ -357,7 +409,7 @@ public class Fenetre extends JFrame implements ActionListener, ChangeListener, I
 		else
 			grillePlusProchesVoisins.setCliqueParcours(false);
 
-		if (rb4.isSelected())
+		if (checkMST.isSelected())
 		{
 			tableOnglets.addTab("MST", grilleMST);
 			grilleMST.setCliqueParcours(true);
@@ -365,7 +417,7 @@ public class Fenetre extends JFrame implements ActionListener, ChangeListener, I
 		else
 			grilleMST.setCliqueParcours(false);
 
-		if (rb5.isSelected())
+		if (checkAlgo2Opt.isSelected())
 		{
 			tableOnglets.addTab("Algo-2Opt", grille2Opt);
 			grille2Opt.setCliqueParcours(true);

@@ -1,5 +1,9 @@
 import java.util.ArrayList;
-
+/**
+ * BackTrack + init 2Opt + Condition MST
+ * @author tommi
+ *
+ */
 public class BackTrack_v4 extends CreationGraphe 
 {
 	private ArrayList <Point> aParcourir;
@@ -14,9 +18,12 @@ public class BackTrack_v4 extends CreationGraphe
 
 	public void lancement ()
 	{
-		Algo2Opt gr = new Algo2Opt(super.g);
-		gr.lancement();
-		super.minparcours = gr.minparcours;
+		double begin = System.currentTimeMillis();
+		
+//		Algo2Opt gr = new Algo2Opt(super.g);
+//		gr.lancement();
+//		super.minparcours = gr.minparcours;
+		super.minparcours = 50000;
 
 		System.out.println("Min parcours : " + super.minparcours);
 
@@ -27,6 +34,8 @@ public class BackTrack_v4 extends CreationGraphe
 		
 		// On cree une distance de base (0) et on passe les deux listes en paramètres.
 		recherche (subtour, aParcourir, 0);
+		
+		super.tempsParcours = System.currentTimeMillis() - begin;
 	}
 
 	public void recherche (ArrayList <Point> subtour, ArrayList <Point> aParcourir, double distance)
@@ -40,8 +49,7 @@ public class BackTrack_v4 extends CreationGraphe
 			if (newDist < super.minparcours) {
 				//System.out.println("passe");
 				super.minparcours = newDist;
-				super.parcoursmin.clear(); 
-				super.parcoursmin.addAll(subtour);
+				super.parcoursmin = subtour;
 				//afficheliste(subtour);
 				//System.out.println("  -> "+minparcours);}
 			}

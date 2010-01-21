@@ -1,5 +1,10 @@
 import java.util.ArrayList;
 
+/**
+ * BackTrack + init 2Opt
+ * @author tommi
+ *
+ */
 public class BackTrack_v3 extends CreationGraphe 
 {
 	private ArrayList <Point> aParcourir;
@@ -14,6 +19,8 @@ public class BackTrack_v3 extends CreationGraphe
 
 	public void lancement ()
 	{
+		double begin = System.currentTimeMillis();
+		
 		Algo2Opt gr = new Algo2Opt(super.g);
 		gr.lancement();
 		super.minparcours = gr.minparcours;
@@ -27,6 +34,8 @@ public class BackTrack_v3 extends CreationGraphe
 
 		// On cree une distance de base (0) et on passe les deux listes en paramètres.
 		recherche (subtour, aParcourir, 0);
+		
+		super.tempsParcours = System.currentTimeMillis() - begin;
 	}
 
 	public void recherche (ArrayList <Point> subtour, ArrayList <Point> aParcourir, double distance)
@@ -39,6 +48,7 @@ public class BackTrack_v3 extends CreationGraphe
 
 			if (newDist < super.minparcours) {
 				//System.out.println("passe");
+				
 				super.minparcours = newDist;
 				super.parcoursmin = subtour;
 				//afficheliste(subtour);

@@ -27,6 +27,7 @@ public class Graphe {
 
 	public Graphe ()
 	{
+		identVille = -1;
 		listePoints = new ArrayList<Point>();
 	}
 

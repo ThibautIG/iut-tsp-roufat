@@ -5,14 +5,16 @@ import java.util.ArrayList;
 public class CreationGraphe
 {
 	protected Graphe g;
-	public double minparcours = 0;
+	public double minparcours;
 	public ArrayList<Point> parcoursmin;
-	public double tempsParcours = 0;
+	public double tempsParcours;
 	
 	public CreationGraphe (Graphe g)
 	{
 		this.g = g;
 		parcoursmin = new ArrayList<Point>();
+		this.tempsParcours = 0;
+		this.minparcours = 0;
 	}
 	
 	public static ArrayList<Point> copieListe (ArrayList<Point> liste)
@@ -44,7 +46,6 @@ public class CreationGraphe
 		}
 	}
 	
-	
 	public void afficheminparcours ()
 	{
 		for (Point p : parcoursmin)
@@ -57,6 +58,7 @@ public class CreationGraphe
 	// Affichage Graphique des parcours
 	public void affichageParcoursGraphe(Graphics g, int dimGrille)
 	{
+		try {
 		System.out.println("Affichage Graphe");
 		Point u = null;
 		Point v = null;
@@ -68,10 +70,19 @@ public class CreationGraphe
 			g.drawLine((int)u.getX(),(int)u.getY(),(int)v.getX(), (int)v.getY());
 		}
 			
-		u = parcoursmin.get(parcoursmin.size()-1);
-		v = parcoursmin.get(0);
-		// Dessin de la ligne qui amene au 0
-		g.drawLine((int)u.getX(), (int)u.getY(), (int)v.getX(), (int)v.getY());
+//		u = parcoursmin.get(parcoursmin.size()-1);
+//		v = parcoursmin.get(0);
+//		// Dessin de la ligne qui amene au 0
+//		g.drawLine((int)u.getX(), (int)u.getY(), (int)v.getX(), (int)v.getY());
+		
+		v = parcoursmin.get(parcoursmin.size()-1);
+		g.drawLine((int)(v.getX()), (int)(v.getY()), 
+				(int)(parcoursmin.get(0).getX()), (int)(parcoursmin.get(0).getY()));
+		
+		g.drawLine((int)(v.getX()*dimGrille), (int)(dimGrille-(v.getY()*dimGrille)), 
+				(int)(parcoursmin.get(0).getX()*dimGrille), (int)(dimGrille-(parcoursmin.get(0).getY()*dimGrille)));
+		}
+		catch (IndexOutOfBoundsException e) {System.out.println("erreur index"); }
 	}
 	
 }

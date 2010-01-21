@@ -1,76 +1,86 @@
 import java.util.ArrayList;
 
+/**
+ * BackTrack
+ * @author tommi
+ *
+ */
 public class BackTrack extends CreationGraphe 
 {
 	private ArrayList <Point> aParcourir;
 	private ArrayList <Point> subtour;
+	private double newDist;
+	private Point q;
 
-	public BackTrack (Graphe g)
+	public BackTrack(Graphe g)
 	{
 		super(g);
 	}
 
 	public void lancement ()
 	{
+		double begin = System.currentTimeMillis();
+		
 		super.minparcours = 500000;
-		
-		aParcourir = new ArrayList<Point>();
-		aParcourir.addAll(g.getListePoints());
 
-		
+		System.out.println("Min parcours : " + super.minparcours);
+
+		aParcourir = new ArrayList<Point>();
+		aParcourir.addAll(super.g.getListePoints());
+
 		subtour = new ArrayList<Point>();
 
-		// On cree une distance de base et on passe les deux listes en paramètres.
+		// On cree une distance de base (0) et on passe les deux listes en paramÃ¨tres.
 		recherche (subtour, aParcourir, 0);
 		
+		super.tempsParcours = System.currentTimeMillis() - begin;
 	}
 
 	public void recherche (ArrayList <Point> subtour, ArrayList <Point> aParcourir, double distance)
 	{
+		newDist = distance;
 		if (aParcourir.isEmpty())
 		{
-			if (distance < super.minparcours)
-				super.minparcours = distance;
-			//afficheliste(subtour);
-			//System.out.println("    --> " + super.minparcours);
-		}
-		else if (distance < super.minparcours)
-		{
-			for (Point p : aParcourir)
-			{
-				// On cree une nouvelle liste qui contient les points de subtour
-				ArrayList<Point> copieSubtour = new ArrayList<Point>();
-				copieSubtour = super.copieListe(subtour);
-				
-				// On cree une nouvelle liste qui contient les points de aParcourir
-				ArrayList<Point> copieAParcourir = new ArrayList<Point>();
-				copieAParcourir = super.copieListe(aParcourir);
+			// Ajout de la derniere arete
+			newDist = distance + super.g.getDistance(subtour.get(subtour.size()-1), subtour.get(0));
 
-				// On ajoute le point parcouru
-				copieSubtour.add(new Point(p.getIdent()));
-
-				// On supprime le point p de la liste copiee
-				copieAParcourir.remove(p);
-				
-				// On calcule le cout du parcours
-				distance = cout (copieSubtour);
-				
-				// Puis on descend dans l'arbre
-				recherche (copieSubtour, copieAParcourir, distance);
+			if (newDist < super.minparcours) {
+				//System.out.println("passe");
+				super.minparcours = newDist;
+				super.parcoursmin = subtour;
+				//afficheliste(subtour);
+				//System.out.println("  -> "+minparcours);}
 			}
 		}
-	}
-	
-	public double cout (ArrayList<Point> liste)
-	{
-		double distancefinale = 0;
-		for (int i=0; i < liste.size() - 1; i++)
-		{
-			distancefinale += super.g.getDistance(liste.get(i), liste.get(i+1));
+		else
+		{ 
+			if (distance < super.minparcours)
+			{
+				for (Point p : aParcourir)
+				{
+					// On calcule le cout du parcours
+					if (!subtour.isEmpty()){
+						q = subtour.get(subtour.size()-1);
+						newDist = distance + super.g.getDistance(q, p);}
+
+					// On cree une nouvelle liste qui contient les points de subtour
+					ArrayList<Point> copieSubtour = new ArrayList<Point>();
+					copieSubtour = super.copieListe(subtour);
+
+					// On cree une nouvelle liste qui contient les points de aParcourir
+					ArrayList<Point> copieAParcourir = new ArrayList<Point>();
+					copieAParcourir = super.copieListe(aParcourir);
+
+					// On ajoute le point parcouru
+					copieSubtour.add(new Point(p.getIdent()));
+
+					// On supprime le point p de la liste copiee
+					copieAParcourir.remove(p);
+
+					// Puis on descend dans l'arbre
+					recherche (copieSubtour, copieAParcourir, newDist);
+				}
+			}
 		}
-		// On revient au point de départ
-		distancefinale += super.g.getDistance(liste.get(liste.size() - 1), liste.get(0));
-		
-		return distancefinale;
 	}
 }

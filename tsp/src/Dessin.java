@@ -11,6 +11,7 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 
 public class Dessin extends JPanel implements MouseListener, MouseMotionListener, ActionListener {
@@ -19,7 +20,8 @@ public class Dessin extends JPanel implements MouseListener, MouseMotionListener
 	private JPanel menugrille;
 	private int dimensionGrille = 50;			// Par défaut
 	private boolean grilleActive = true;
-	private JButton bActivation, bCouleur, bEffacer;
+	private JButton bActivation, bCouleur;
+	private JTextField nbrVillesFenetre;
 	private Color couleurChoisie = Color.RED;
 	public static Graphe graphe = new Graphe();
 	private int sourisX, sourisY;
@@ -36,10 +38,11 @@ public class Dessin extends JPanel implements MouseListener, MouseMotionListener
 	 * 
 	 * @param s : Chaine de caractères qui explicite la méthode employée (bruteforce, backtrack, etc.).
 	 */
-	public Dessin (String s, Resultats result)
+	public Dessin (String s, Resultats result, JTextField nbrville)
 	{
-		this.graphe = new Graphe();
+		Dessin.graphe = new Graphe();
 		this.result = result;
+		this.nbrVillesFenetre = nbrville;
 
 		setLayout(new BorderLayout());
 		barreMenu ();
@@ -67,11 +70,7 @@ public class Dessin extends JPanel implements MouseListener, MouseMotionListener
 		bCouleur = new JButton("Couleur du Pointeur");
 		bCouleur.setActionCommand("couleurpointeur"); bCouleur.addActionListener(this);
 
-		bEffacer = new JButton ("Effacer");
-		bEffacer.setActionCommand("effacergrille"); bEffacer.addActionListener(this);
-
-
-		menugrille.add(bActivation); menugrille.add(bCouleur); menugrille.add(bEffacer);
+		menugrille.add(bActivation); menugrille.add(bCouleur);
 		this.add(menugrille, BorderLayout.SOUTH);
 
 	}
@@ -131,7 +130,7 @@ public class Dessin extends JPanel implements MouseListener, MouseMotionListener
 
 	public void generationVilles (int nbrVilles)
 	{
-		graphe = new Graphe(nbrVilles);
+		Dessin.graphe = new Graphe(nbrVilles);
 		this.repaint();
 	}
 
@@ -156,7 +155,7 @@ public class Dessin extends JPanel implements MouseListener, MouseMotionListener
 
 	/** 
 	 * 
-	 * @param g
+	 * 
 	 */
 	public void generationParcours (Graphics g)
 	{
@@ -173,16 +172,43 @@ public class Dessin extends JPanel implements MouseListener, MouseMotionListener
 		else if (methode.equals("backtrack"))
 		{
 			if (gvalide)
+			{choix = new BackTrack(graphe);
+			((BackTrack) choix).lancement();}
+			choix.affichageParcoursGraphe(g, dimensionGrille);
+			result.remplirCases(choix.minparcours, choix.tempsParcours);
+		}
+		else if (methode.equals("backtrackv2"))
+		{
+			if (gvalide)
+			{choix = new BackTrack_v2(graphe);
+			((BackTrack_v2) choix).lancement();}
+			choix.affichageParcoursGraphe(g, dimensionGrille);
+			result.remplirCases(choix.minparcours, choix.tempsParcours);
+			
+		}
+		else if (methode.equals("backtrackv3"))
+		{
+			if (gvalide)
+			{choix = new BackTrack_v3(graphe);
+			((BackTrack_v3) choix).lancement();}
+			choix.affichageParcoursGraphe(g, dimensionGrille);
+			result.remplirCases(choix.minparcours, choix.tempsParcours);
+			
+		}
+		else if (methode.equals("backtrackv4"))
+		{
+			if (gvalide)
 			{choix = new BackTrack_v4(graphe);
 			((BackTrack_v4) choix).lancement();}
 			choix.affichageParcoursGraphe(g, dimensionGrille);
 			result.remplirCases(choix.minparcours, choix.tempsParcours);
+			
 		}
 		else if (methode.equals("mst"))
 		{
 			if (gvalide) 
-			{choix = new Algo_Kruskal(graphe);
-			((Algo_Kruskal) choix).lancement();}
+			{choix = new Algo_MST(graphe);
+			((Algo_MST) choix).lancement();}
 			choix.affichageParcoursGraphe(g, dimensionGrille);
 			result.remplirCases(choix.minparcours, choix.tempsParcours);
 		}
@@ -201,7 +227,7 @@ public class Dessin extends JPanel implements MouseListener, MouseMotionListener
 			{choix = new ProchesVoisins(graphe);
 			((ProchesVoisins) choix).lancement();}
 			choix.affichageParcoursGraphe(g, dimensionGrille);
-			this.result.remplirCases(choix.minparcours, choix.tempsParcours);
+			this.result.remplirCases(choix.minparcours, choix.tempsParcours/1000);
 		}
 
 
@@ -229,11 +255,16 @@ public class Dessin extends JPanel implements MouseListener, MouseMotionListener
 	public void mousePressed(MouseEvent ev) {}
 	public void mouseClicked(MouseEvent ev) 
 	{	
-		int x = ev.getX();
-		int y = ev.getY();
-		graphe.addPoint(x,y);
-		System.out.println("passe");
-		repaint();
+		// Si le graphe a deja ete valide, on n'autorise pas de nouveau point
+		if (gvalide)
+		{
+			int x = ev.getX();
+			int y = ev.getY();
+			graphe.addPoint(x,y);
+			nbrVillesFenetre.setText(Graphe.listePoints.size() + "");
+			System.out.println("passe");
+			repaint();
+		}
 	} 
 	public void mouseEntered(MouseEvent arg0) {	}
 	public void mouseExited(MouseEvent arg0) { }

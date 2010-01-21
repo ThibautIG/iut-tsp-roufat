@@ -14,6 +14,8 @@ public class BruteForce extends CreationGraphe
 	public void lancement ()
 	// Sert à appeler 'recherche' et à renvoyer à la procédure principale la distance du parcours optimal.
 	{			
+		double begin = System.currentTimeMillis();
+		
 		super.minparcours = 5000000;
 		
 		aParcourir = new ArrayList<Point>();
@@ -24,6 +26,8 @@ public class BruteForce extends CreationGraphe
 		// Lancement de la BruteForce
 		if (!aParcourir.isEmpty())
 			recherche (subtour,aParcourir);
+		
+		super.tempsParcours = System.currentTimeMillis() - begin;
 	}
 	
 	private void recherche (ArrayList<Point> subtour, ArrayList<Point> aParcourir)
