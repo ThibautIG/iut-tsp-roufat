@@ -14,6 +14,8 @@ public class ProchesVoisins extends CreationGraphe
 
 	public void lancement ()
 	{
+		double begin = System.currentTimeMillis();
+		
 		super.minparcours = 5000000;
 
 		aParcourir = new ArrayList<Point>();
@@ -29,10 +31,9 @@ public class ProchesVoisins extends CreationGraphe
 			aParcourir.remove(p);
 
 
-			recherche (aParcourir, subtour,aParcourir.get(0));
-
-			// Ajout du dernier point
-			subtour.add(new Point(subtour.get(0).getIdent()));
+			recherche (aParcourir, subtour, p);
+			
+			super.tempsParcours = System.currentTimeMillis() - begin;
 		}
 	}
 
@@ -44,34 +45,42 @@ public class ProchesVoisins extends CreationGraphe
 			super.parcoursmin.addAll(subtour);
 		}
 		else 
-		{				
+		{	
+			// On cree une nouvelle liste qui contient les points de aParcourir
+			ArrayList<Point> copieAParcourir = new ArrayList<Point>();
+			copieAParcourir = super.copieListe(aParcourir);
+			
+			// On cree une nouvelle liste qui contient les points de subtour
+			ArrayList<Point> copieSubtour = new ArrayList<Point>();
+			copieSubtour = super.copieListe(subtour);
+			
 			// On cherche le point le plus près du sommet.
-			Point sommetSuivant = ppv (sommet);
-
+			Point sommetSuivant = ppv (sommet, copieAParcourir);
+			
 			// On l'ajoute au parcours
-			subtour.add(sommetSuivant);
-
+			copieSubtour.add(sommetSuivant);
+			
 			// On l'enleve de la liste des points à parcourir puisqu'on vient d'y passer.
-			aParcourir.remove(sommetSuivant);
+			copieAParcourir.remove(sommetSuivant);
 
 			// Et on fait appel à la méthode récursive
-			recherche (aParcourir, subtour, sommetSuivant);
+			recherche (copieAParcourir, copieSubtour, sommetSuivant);
 		}
 	}
 
 
-	public Point ppv (Point pSommet)
+	public Point ppv (Point pSommet, ArrayList<Point> aParcourir)
 	{
 		double pluspetit = 5000000;
 		// On initialise le point le plus proche à la première case de aParcourir
 		Point pointProche = aParcourir.get(0);
 
-		for (int i = 1 ; i < aParcourir.size() - 1; i++)
+		for (Point p : aParcourir)
 		{
-			if ((pluspetit > super.g.getDistance(pSommet,aParcourir.get(i))))
+			if (pluspetit > super.g.getDistance(pSommet,p))
 			{
 				// On stocke le point le plus proche et la distance
-				pointProche = aParcourir.get(i);
+				pointProche = p;
 				pluspetit = super.g.getDistance(pSommet,pointProche);
 			}
 		}

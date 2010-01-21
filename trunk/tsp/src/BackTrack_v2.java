@@ -1,7 +1,12 @@
 import java.util.ArrayList;
 
+/**
+ * BackTrack + MST
+ * @author tommi
+ *
+ */
 public class BackTrack_v2 extends CreationGraphe 
-{
+{ 
 	private ArrayList <Point> aParcourir;
 	private ArrayList <Point> subtour;
 	private double newDist;
@@ -14,9 +19,9 @@ public class BackTrack_v2 extends CreationGraphe
 
 	public void lancement ()
 	{
-		//ProchesVoisins initPpv = new ProchesVoisins (super.g); 
-		//initPpv.lancement();
-		super.minparcours = 500000;
+		double begin = System.currentTimeMillis();
+		
+		super.minparcours = 50000;
 
 		System.out.println("Min parcours : " + super.minparcours);
 
@@ -24,9 +29,11 @@ public class BackTrack_v2 extends CreationGraphe
 		aParcourir.addAll(super.g.getListePoints());
 
 		subtour = new ArrayList<Point>();
-
+		
 		// On cree une distance de base (0) et on passe les deux listes en paramètres.
 		recherche (subtour, aParcourir, 0);
+		
+		super.tempsParcours = System.currentTimeMillis() - begin;
 	}
 
 	public void recherche (ArrayList <Point> subtour, ArrayList <Point> aParcourir, double distance)
@@ -47,7 +54,10 @@ public class BackTrack_v2 extends CreationGraphe
 		}
 		else
 		{ 
-			if (distance < super.minparcours)
+			MST_2 mst = new MST_2(aParcourir);
+			mst.lancement();
+			double coutmst = mst.cout();
+			if ((newDist + coutmst) < super.minparcours)
 			{
 				for (Point p : aParcourir)
 				{

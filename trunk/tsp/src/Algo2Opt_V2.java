@@ -2,12 +2,12 @@ import java.util.ArrayList;
 
 
 
-public class Algo2Opt extends CreationGraphe
+public class Algo2Opt_V2 extends CreationGraphe
 {
 	private ArrayList<Point> listePoints ; 
 	private ProchesVoisins ppv;
 
-	public Algo2Opt (Graphe g)
+	public Algo2Opt_V2 (Graphe g)
 	{
 		super(g);
 	}
